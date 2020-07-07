@@ -12,6 +12,7 @@
 """
 import os
 import json
+import zipfile
 from podrum.wizard import Wizard
 
 class ServerFS:
@@ -47,6 +48,14 @@ class ServerFS:
     def checkForDir(path):
         return os.path.isdir(f'{path}')
 
+    def getLangDir():
+        if ServerFS.checkForDir(os.path.dirname(os.path.abspath(__file__)) + '/..'):
+            langDir = os.path.dirname(os.path.abspath(__file__)) + '/../lang'
+        else:
+            pyzDir = zipfile.ZipFile(os.path.dirname(os.path.abspath(__file__)) + '/..')
+            langDir = pyzFile.open('lang')
+        return langDir
+
 
     def checkAllFiles(path):
         firstLaunch = False
@@ -64,18 +73,20 @@ class ServerFS:
         if(isWizardSkipped == False):
             with open(f'{path}/server.json', 'w', encoding="utf8") as file:
                 content = {
-                "MOTD": options[1],
+                "MOTD": options[2],
                 "Language": options[0],
-                "MaxPlayers": options[2],
-                "Gamemode": options[3]
+                "MaxPlayers": options[4],
+                "Gamemode": options[3],
+                "Server-Port": options[1]
                 }
                 json.dump(content, file, indent=4, skipkeys=True, ensure_ascii=False)
         else:
             content = {
                 "MOTD": "Podrum powered server.",
-                "Language": "en",
+                "Language": options[0],
                 "MaxPlayers": "20",
-                "Gamemode": "0"
+                "Gamemode": "0",
+                "Server-Port": "19132"
             }
             with open(f'{path}/server.json', 'w', encoding="utf8") as fl:
                 json.dump(content, fl, indent=4, skipkeys=True)
